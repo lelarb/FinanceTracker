@@ -3,7 +3,6 @@ import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
 import org.bson.Document;
 import com.mongodb.client.MongoCollection;
-
 import java.util.ArrayList;
 
 public class TransactionManager {
@@ -25,9 +24,9 @@ public class TransactionManager {
         while (cursor.hasNext()){
             Document d = cursor.next();
             list.add(new Transaction(
-                    d.getString("type"),
-                    d.getDouble("amount"),
-                    d.getString("description")
+                    d.getString("Vrsta"),
+                    d.getDouble("Iznos"),
+                    d.getString("Opis")
             ));
         }
         return list;
@@ -35,7 +34,7 @@ public class TransactionManager {
 public double getTotalIncome(){
         double total = 0;
         for(Transaction t : getAllTransactions()){
-            if(t.getType().equals("Prihod")){
+            if("Prihod".equals(t.getType())){
                 total += t.getAmount();
             }
         }
@@ -44,7 +43,7 @@ public double getTotalIncome(){
 public double getTotalExpense(){
         double total = 0;
         for (Transaction t : getAllTransactions()){
-            if (t.getType().equals("Rashod")){
+            if ("Rashod".equals(t.getType())){
                 total += t.getAmount();
             }
         }
