@@ -3,6 +3,8 @@ import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
 import org.bson.Document;
 import com.mongodb.client.MongoCollection;
+import org.bson.types.ObjectId;
+
 import java.util.ArrayList;
 
 public class TransactionManager {
@@ -24,6 +26,7 @@ public class TransactionManager {
         while (cursor.hasNext()){
             Document d = cursor.next();
             list.add(new Transaction(
+                    d.getObjectId("_id"),
                     d.getString("Vrsta"),
                     d.getDouble("Iznos"),
                     d.getString("Opis")
@@ -31,6 +34,7 @@ public class TransactionManager {
         }
         return list;
     }
+
 public double getTotalIncome(){
         double total = 0;
         for(Transaction t : getAllTransactions()){
@@ -40,6 +44,7 @@ public double getTotalIncome(){
         }
         return total;
 }
+
 public double getTotalExpense(){
         double total = 0;
         for (Transaction t : getAllTransactions()){
@@ -48,5 +53,18 @@ public double getTotalExpense(){
             }
         }
         return total;
+}
+
+public void updateTransaction(Transaction t){
+        collection.updateOne(
+                new Document("_id", t.getId()),
+                new Document("$set", new Document("Vrsta", t.getType())
+                        .append("Iznos", t.getAmount())
+                        .append("Opis", t.getDescription()))
+        );
+}
+
+public void deleteTransaction(ObjectId id){
+        collection.deleteOne(new Document("_id", id));
 }
 }
