@@ -29,7 +29,8 @@ public class TransactionManager {
                     d.getObjectId("_id"),
                     d.getString("Vrsta"),
                     d.getDouble("Iznos"),
-                    d.getString("Opis")
+                    d.getString("Opis"),
+                    d.getString("Kategorija")
             ));
         }
         return list;
@@ -60,7 +61,8 @@ public void updateTransaction(Transaction t){
                 new Document("_id", t.getId()),
                 new Document("$set", new Document("Vrsta", t.getType())
                         .append("Iznos", t.getAmount())
-                        .append("Opis", t.getDescription()))
+                        .append("Opis", t.getDescription())
+                        .append("Kategorija", t.getCategory()))
         );
 }
 
