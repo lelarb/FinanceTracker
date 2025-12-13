@@ -1,0 +1,1 @@
+FinanceTracker je Java desktop aplikacija za praćenje ličnih finansija. Omogućava unos, pregled, ažuriranje i brisanje transakcija, dodjeljivanje kategorija te automatski prikaz ukupnog prihoda, rashoda i stanja. Podaci se čuvaju u MongoDB bazi, a aplikacija omogućava i export finansijskog izvještaja u TXT formatu.
