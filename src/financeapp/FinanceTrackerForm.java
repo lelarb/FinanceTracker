@@ -30,16 +30,27 @@ public class FinanceTrackerForm {
 
     private TransactionManager manager;
 
+    private final String[] incomeCategories = {
+            "Odaberi", "Plata", "Poklon", "Stipendija", "Ostalo"
+    };
+
+    private final String[] expenseCategories = {
+            "Odaberi", "Hrana", "Racuni", "Zabava", "Prijevoz", "Ostalo"
+    };
+
     public FinanceTrackerForm(){
         manager = new TransactionManager();
         loadDataIntoTable();
         updateSummary();
+        updateCategoryComboBox();
+        comboBox1.addActionListener( e -> updateCategoryComboBox());
 
         transactonTable.getSelectionModel().addListSelectionListener(e -> {
             int selectedRow = transactonTable.getSelectedRow();
             if(selectedRow >= 0 && currentTransactions != null){
                 Transaction t = currentTransactions.get(selectedRow);
                 comboBox1.setSelectedItem(t.getType());
+                updateCategoryComboBox();
                 textField1.setText(String.valueOf(t.getAmount()));
                 textField2.setText(t.getDescription());
                 categoryComboBox.setSelectedItem(t.getCategory());
@@ -56,6 +67,11 @@ public class FinanceTrackerForm {
                 if(description.isEmpty()){
                     JOptionPane.showMessageDialog(null,
                             "Opis ne može biti prazan!");
+                    return;
+                }
+
+                if(category == null || "Odaberi".equals(category)){
+                    JOptionPane.showMessageDialog(null, "Molimo odaberite kategoriju!");
                     return;
                 }
                 Transaction t = new Transaction(type, amount, description, category);
@@ -86,6 +102,11 @@ public class FinanceTrackerForm {
 
                 if(description.isEmpty()){
                     JOptionPane.showMessageDialog(null, "Opis ne može biti prazan!");
+                    return;
+                }
+
+                if(category == null || "Odaberi".equals(category)){
+                    JOptionPane.showMessageDialog(null, "Molimo odaberite kategoriju!");
                     return;
                 }
 
@@ -140,6 +161,17 @@ public class FinanceTrackerForm {
         exportButton.addActionListener(e -> exportToFile());
     }
 
+    private void updateCategoryComboBox(){
+        String type = (String) comboBox1.getSelectedItem();
+        if("Prihod".equals(type)){
+            categoryComboBox.setModel(new DefaultComboBoxModel<>(incomeCategories));
+        }else if ("Rashod".equals(type)){
+            categoryComboBox.setModel(new DefaultComboBoxModel<>(expenseCategories));
+        }else{
+            categoryComboBox.setModel(new DefaultComboBoxModel<>(new String[]{"Odaberi"}));
+        }
+        categoryComboBox.setSelectedIndex(0);
+    }
 
     private void loadDataIntoTable(){
         currentTransactions = manager.getAllTransactions();
@@ -175,20 +207,17 @@ public class FinanceTrackerForm {
     }
 
     private void exportToFile() {
-        // 1) Uzmemo sve transakcije iz baze
         ArrayList<Transaction> list = manager.getAllTransactions();
 
         double income = 0;
         double expense = 0;
 
-        // Rashodi po kategorijama
         Map<String, Double> expenseByCategory = new HashMap<>();
-        String[] categories = {"Plata", "Hrana", "Racuni", "Zabava", "Prijevoz", "Ostalo"};
+        String[] categories = {"Hrana", "Racuni", "Zabava", "Prijevoz", "Ostalo"};
         for (String c : categories) {
             expenseByCategory.put(c, 0.0);
         }
 
-        // 2) Prolazimo kroz sve transakcije i sabiramo
         for (Transaction t : list) {
             if ("Prihod".equals(t.getType())) {
                 income += t.getAmount();
@@ -209,7 +238,6 @@ public class FinanceTrackerForm {
 
         double balance = income - expense;
 
-        // 3) Pišemo u TXT datoteku
         try (FileWriter writer = new FileWriter("finansije_izvjestaj.txt")) {
 
             writer.write("Ukupni prihod: " + income + "\n");

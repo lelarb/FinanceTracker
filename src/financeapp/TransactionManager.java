@@ -9,12 +9,10 @@ import java.util.ArrayList;
 
 public class TransactionManager {
     private final MongoCollection<Document>collection;
-
     public TransactionManager(){
         MongoDatabase db = MongoDBConnection.getDatabase();
         collection = db.getCollection("transactions");
     }
-
     public void addTransaction(Transaction t){
         collection.insertOne(t.toDocument());
     }
@@ -22,7 +20,6 @@ public class TransactionManager {
     public ArrayList<Transaction> getAllTransactions(){
         ArrayList<Transaction> list = new ArrayList<>();
         MongoCursor<Document> cursor = collection.find().iterator();
-
         while (cursor.hasNext()){
             Document d = cursor.next();
             list.add(new Transaction(
@@ -30,31 +27,22 @@ public class TransactionManager {
                     d.getString("Vrsta"),
                     d.getDouble("Iznos"),
                     d.getString("Opis"),
-                    d.getString("Kategorija")
-            ));
-        }
-        return list;
-    }
+                    d.getString("Kategorija") )); }
+        return list; }
 
 public double getTotalIncome(){
         double total = 0;
         for(Transaction t : getAllTransactions()){
             if("Prihod".equals(t.getType())){
-                total += t.getAmount();
-            }
-        }
-        return total;
-}
+                total += t.getAmount(); } }
+        return total; }
 
 public double getTotalExpense(){
         double total = 0;
         for (Transaction t : getAllTransactions()){
             if ("Rashod".equals(t.getType())){
-                total += t.getAmount();
-            }
-        }
-        return total;
-}
+                total += t.getAmount(); } }
+        return total; }
 
 public void updateTransaction(Transaction t){
         collection.updateOne(
@@ -62,9 +50,7 @@ public void updateTransaction(Transaction t){
                 new Document("$set", new Document("Vrsta", t.getType())
                         .append("Iznos", t.getAmount())
                         .append("Opis", t.getDescription())
-                        .append("Kategorija", t.getCategory()))
-        );
-}
+                        .append("Kategorija", t.getCategory())) ); }
 
 public void deleteTransaction(ObjectId id){
         collection.deleteOne(new Document("_id", id));

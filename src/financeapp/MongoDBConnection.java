@@ -6,11 +6,8 @@ import com.mongodb.client.MongoDatabase;
 
 public class MongoDBConnection {
     private static final String URI = "mongodb://localhost:27017";
-
     private static final String DB_NAME = "financeTrackerDB";
-
     private static MongoClient client = null;
-
     public static MongoDatabase getDatabase(){
         if(client == null){
             client = MongoClients.create(URI);

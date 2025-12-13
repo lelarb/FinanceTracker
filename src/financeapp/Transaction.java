@@ -37,5 +37,4 @@ public class Transaction {
     public double getAmount(){ return amount; }
     public String getDescription(){ return description; }
     public String getCategory(){ return category; }
-
 }
